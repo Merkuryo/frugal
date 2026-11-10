@@ -1,0 +1,12 @@
+{
+  "name": "frugal",
+  "version": "0.1.0",
+  "description": "Orchestrate any task with Claude at the lowest token cost that still gets verified results: cost levels, model routing by phase, compact principles, on-demand playbooks.",
+  "author": {
+    "name": "Merkuryo"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Merkuryo/frugal",
+  "repository": "https://github.com/Merkuryo/frugal",
+  "keywords": ["orchestration", "tokens", "cost", "workflow", "subagents", "verification", "playbooks"]
+}

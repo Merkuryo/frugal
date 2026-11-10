@@ -1,0 +1,15 @@
+{
+  "description": "Adds a ~120-token pointer to the frugal skill at session start. Turn off with 'session hook: off' in the frugal config sheet.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -12,15 +12,14 @@ frugal is a plugin for Claude Code and the Claude app. It works for code, writin
 
 ## Static cost compared with pstack
 
-Measured with `node tools/budget.mjs` (characters ÷ 4, a rough proxy for tokens) against the Claude Code port of pstack, v0.9.134:
+Projected token cost from Claude Code's own `claude plugin details`, for frugal 0.1.1 and the Claude Code port of pstack, v0.9.134:
 
-| | frugal 0.1.0 | pstack 0.9.134 |
+| | frugal | pstack |
 |---|---:|---:|
-| Always in context (skill and agent descriptions) | ~280 | ~4,100 |
-| Session-start hook | ~90 | ~250 |
-| Entry skill loaded per task | ~870 | ~7,200 |
-| All skill text | ~3,700 | ~163,000 |
+| Added to every session | ~400 | ~4,200 |
+| Entry skill, each time it is invoked | ~790 | ~7,100 |
 | Skills / agents | 3 / 4 | 67 / 4 |
+| All skill text (`node tools/budget.mjs`, characters ÷ 4) | ~3,700 | ~163,000 |
 
 These figures are a **floor**. They only measure what the plugin adds to context, not how well tasks get done. For quality and full-run cost, see [Evals](#evals).
 
@@ -74,19 +73,20 @@ Gates for irreversible or outward-facing actions (delete, force-push, send, publ
 
 ## Evals
 
-`plugins/frugal/evals/` holds five cases for Claude Code's built-in evaluator:
+`plugins/frugal/evals/` holds cases for Claude Code's built-in evaluator. Each case runs with and without the plugin, so the headline numbers are the score delta and the cost of each arm.
 
-- build a script
-- fix a bug
-- analyze data
-- write an email
-- a trivial question where frugal must **not** fire
-
-Each case runs with and without the plugin, so the headline numbers are the score delta and the cost per arm:
+- **Small tasks** (01–05): build a script, fix a bug, analyze inline data, write an email, and a trivial question. frugal is designed to stay out of the way here (L0), so these check that it does not hurt.
+- **Multi-step tasks** (06–08, tag `multistep`): a feature that crosses three files of a package with tests, a bug whose symptom and cause live in different files, and an analysis over a ~13,000-row CSV on disk. Each one sets up its files with a `scaffold.sh` script. These are where frugal should engage and save tokens.
 
 ```
-claude plugin eval ./plugins/frugal --ablation with-without --allow-tools Write Edit Bash --no-publish
+# multi-step cases (scaffold scripts create the project files)
+claude plugin eval ./plugins/frugal --tag multistep --scaffold --allow-tools Write Edit Bash --no-publish
+
+# everything
+claude plugin eval ./plugins/frugal --scaffold --allow-tools Write Edit Bash --no-publish
 ```
+
+Start with `--runs 1` to check that frugal fires (the `router-fired` indicator), then use the default 3 runs for numbers you can trust.
 
 No results are published yet. Contributions of runs, especially head-to-head against other stacks, are welcome. Please include `aggregate-result.json`.
 

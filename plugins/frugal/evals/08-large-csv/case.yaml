@@ -1,0 +1,30 @@
+schema_version: "1.0"
+name: 08-large-csv
+description: Analysis over a ~13k-row CSV on disk; reading it into context is the expensive path.
+tags: [multistep]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  prompt: |
+    `sales.csv` has daily revenue per store for January to March 2026.
+    Which store had the largest percentage drop in total revenue from February to March? Give the store, both monthly totals and the percentage.
+  max_turns: 30
+  timeout_seconds: 400
+  allowed_tools: [Skill, Agent, Read, Write, Edit, Bash, Glob, Grep]
+runs: 3
+graders:
+  - name: right-store
+    type: regex
+    pattern: "store_17"
+  - name: right-number
+    type: llm
+    criteria: "States a drop for store_17 between about 36% and 40% from February to March, with both monthly totals."
+  - name: computed-not-read
+    type: regex
+    target: trace
+    pattern: "python3|import csv|pandas|awk"
+  - name: router-fired
+    type: tool_used
+    tool: Skill
+    input_match: frugal
+    arm: with-only

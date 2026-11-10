@@ -12,15 +12,14 @@ frugal es un plugin para Claude Code y la app de Claude. Sirve para código, tex
 
 ## Coste fijo frente a pstack
 
-Medido con `node tools/budget.mjs` (caracteres ÷ 4, una aproximación a tokens) contra la versión de pstack para Claude Code, v0.9.134:
+Coste en tokens estimado por la propia herramienta de Claude Code, `claude plugin details`, para frugal 0.1.1 y la versión de pstack para Claude Code, v0.9.134:
 
-| | frugal 0.1.0 | pstack 0.9.134 |
+| | frugal | pstack |
 |---|---:|---:|
-| Siempre en contexto (descripciones de skills y agentes) | ~280 | ~4.100 |
-| Gancho de inicio de sesión | ~90 | ~250 |
-| Skill de entrada cargada en cada tarea | ~870 | ~7.200 |
-| Texto total de skills | ~3.700 | ~163.000 |
+| Añadido a cada sesión | ~400 | ~4.200 |
+| Skill de entrada, cada vez que se invoca | ~790 | ~7.100 |
 | Skills / agentes | 3 / 4 | 67 / 4 |
+| Texto total de skills (`node tools/budget.mjs`, caracteres ÷ 4) | ~3.700 | ~163.000 |
 
 Estas cifras son un **mínimo**. Solo miden lo que el plugin añade al contexto, no lo bien que se hacen las tareas. Para la calidad y el coste de ejecuciones completas, mira [Evaluaciones](#evaluaciones).
 
@@ -74,19 +73,25 @@ Pedir aprobación antes de acciones irreversibles o hacia fuera (borrar, force-p
 
 ## Evaluaciones
 
-`plugins/frugal/evals/` contiene cinco casos para el evaluador integrado de Claude Code:
+`plugins/frugal/evals/` contiene casos para el evaluador integrado de Claude Code. Cada caso se ejecuta con y sin el plugin. Los resultados principales son la diferencia de puntuación y el coste de cada versión.
 
-- crear un script
-- arreglar un bug
-- analizar datos
-- escribir un email
-- una pregunta trivial en la que frugal **no** debe activarse
+- **Tareas pequeñas** (01–05): crear un script, arreglar un bug, analizar datos incluidos en el mensaje, escribir un email y una pregunta trivial. Aquí frugal está pensado para no intervenir (L0), así que estos casos comprueban que no empeora nada.
+- **Tareas multipaso** (06–08, etiqueta `multistep`):
+  - una función nueva que toca tres archivos de un paquete con tests;
+  - un bug cuyo síntoma y cuya causa están en archivos distintos;
+  - un análisis sobre un CSV de unas 13.000 filas en disco.
 
-Cada caso se ejecuta con y sin el plugin. Los resultados principales son la diferencia de puntuación y el coste de cada versión:
+  Cada caso prepara sus archivos con un script `scaffold.sh`. Es aquí donde frugal debe activarse y ahorrar tokens.
 
 ```
-claude plugin eval ./plugins/frugal --ablation with-without --allow-tools Write Edit Bash --no-publish
+# casos multipaso (los scaffold crean los archivos del proyecto)
+claude plugin eval ./plugins/frugal --tag multistep --scaffold --allow-tools Write Edit Bash --no-publish
+
+# todos
+claude plugin eval ./plugins/frugal --scaffold --allow-tools Write Edit Bash --no-publish
 ```
+
+Empieza con `--runs 1` para comprobar que frugal se activa (indicador `router-fired`) y después usa las 3 ejecuciones por defecto para tener cifras fiables.
 
 Todavía no hay resultados publicados.
 

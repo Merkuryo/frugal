@@ -10,7 +10,7 @@
       "name": "frugal",
       "source": "./plugins/frugal",
       "description": "Task router with cost levels, model routing by phase (read/do/think/check), compact principles and on-demand playbooks for code, writing, research, data and decisions.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }

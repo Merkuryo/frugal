@@ -1,0 +1,42 @@
+schema_version: "1.0"
+name: 06-multifile-feature
+description: Feature that crosses three files of a small package, with existing tests to keep green.
+tags: [multistep]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  prompt: |
+    This folder holds a small Python package, `inventory`, with tests in `tests/` (run them with `python3 -m unittest`).
+    Add support for discounts: each item can have an optional discount percentage (0 to 100, default 0).
+    The store's total value and the report must use discounted prices, and the report should show the discount on each line that has one.
+    Keep the existing tests passing and add tests for the new behaviour.
+  max_turns: 40
+  timeout_seconds: 600
+  allowed_tools: [Skill, Agent, Read, Write, Edit, Bash, Glob, Grep]
+runs: 3
+graders:
+  - name: model-has-discount
+    type: llm
+    focus: {source: file, path: inventory/models.py}
+    criteria: "Item has an optional discount field (percentage) that defaults to 0, so existing Item(...) calls without it still work."
+  - name: total-uses-discount
+    type: llm
+    focus: {source: file, path: inventory/store.py}
+    criteria: "total_value applies each item's discount percentage to its unit price (e.g. price * (1 - discount/100)) and still rounds to 2 decimals."
+  - name: report-shows-discount
+    type: llm
+    focus: {source: file, path: inventory/report.py}
+    criteria: "The report shows the discount on lines of discounted items and its TOTAL line uses the discounted total."
+  - name: tests-added
+    type: llm
+    focus: {source: file, path: tests/test_store.py}
+    criteria: "The test file still contains the original three tests and adds at least one test that checks a discounted total."
+  - name: tests-run
+    type: regex
+    target: trace
+    pattern: "unittest"
+  - name: router-fired
+    type: tool_used
+    tool: Skill
+    input_match: frugal
+    arm: with-only

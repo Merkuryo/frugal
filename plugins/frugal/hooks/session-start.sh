@@ -17,5 +17,5 @@ if [ -n "$sheet" ] && grep -Eiq '^[[:space:]]*session hook:[[:space:]]*off' "$sh
 fi
 
 cat <<'EOF'
-frugal is installed. For any multi-step task (several files or steps, research, a design choice, a problem with unknown cause), invoke the `frugal` skill first: it sizes the task (L0/L1/L2), loads one playbook, and routes reading to haiku, doing to sonnet, thinking to opus. One-step tasks: just do them and verify. User instructions always take precedence.
+frugal is installed. Before reading or editing anything, classify the task. If it touches more than one file, computes over data or logs, needs research, involves a design choice, or is a problem whose cause is not yet known, your FIRST action must be to invoke the `frugal` skill. Otherwise (a question, a single obvious edit, a one-line answer) just do it and verify. User instructions take precedence.
 EOF

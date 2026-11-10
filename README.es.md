@@ -12,7 +12,7 @@ frugal es un plugin para Claude Code y la app de Claude. Sirve para código, tex
 
 ## Coste fijo frente a pstack
 
-Coste en tokens estimado por la propia herramienta de Claude Code, `claude plugin details`, para frugal 0.1.1 y la versión de pstack para Claude Code, v0.9.134:
+Coste en tokens estimado por la propia herramienta de Claude Code, `claude plugin details`, para frugal 0.1.2 y la versión de pstack para Claude Code, v0.9.134:
 
 | | frugal | pstack |
 |---|---:|---:|
@@ -76,10 +76,11 @@ Pedir aprobación antes de acciones irreversibles o hacia fuera (borrar, force-p
 `plugins/frugal/evals/` contiene casos para el evaluador integrado de Claude Code. Cada caso se ejecuta con y sin el plugin. Los resultados principales son la diferencia de puntuación y el coste de cada versión.
 
 - **Tareas pequeñas** (01–05): crear un script, arreglar un bug, analizar datos incluidos en el mensaje, escribir un email y una pregunta trivial. Aquí frugal está pensado para no intervenir (L0), así que estos casos comprueban que no empeora nada.
-- **Tareas multipaso** (06–08, etiqueta `multistep`):
+- **Tareas multipaso** (06–09, etiqueta `multistep`):
   - una función nueva que toca tres archivos de un paquete con tests;
   - un bug cuyo síntoma y cuya causa están en archivos distintos;
-  - un análisis sobre un CSV de unas 13.000 filas en disco.
+  - un análisis sobre un CSV de unas 13.000 filas en disco;
+  - una causa raíz enterrada en un log de 6 MB.
 
   Cada caso prepara sus archivos con un script `scaffold.sh`. Es aquí donde frugal debe activarse y ahorrar tokens.
 
@@ -90,6 +91,8 @@ claude plugin eval ./plugins/frugal --tag multistep --scaffold --allow-tools Wri
 # todos
 claude plugin eval ./plugins/frugal --scaffold --allow-tools Write Edit Bash --no-publish
 ```
+
+Para comparar con pstack en los mismos casos (tres brazos: sin plugin, frugal y pstack), ejecuta `tools/compare-pstack.sh --tag multistep --runs 1`.
 
 Empieza con `--runs 1` para comprobar que frugal se activa (indicador `router-fired`) y después usa las 3 ejecuciones por defecto para tener cifras fiables.
 

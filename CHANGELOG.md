@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Stronger trigger: the session hook tells Claude to invoke frugal first on multi-file, data, research, design or unknown-cause tasks, and the skill description leads with "Use FIRST". In the user's test runs frugal then fired on cases 06 and 08.
+- New case 09-big-log: root cause buried in a 6 MB log among harmless recovered errors.
+- `tools/compare-pstack.sh` runs the same suite against frugal and pstack (each with its no-plugin baseline).
+- Case 06: the discount grader now judges the final code in the trace and accepts a helper on Item.
+
 ## 0.1.1
 
 - Three multi-step eval cases with scaffolded projects (tag `multistep`): a cross-file feature with tests, a bug whose symptom and cause live in different files, and a ~13k-row CSV analysis.

@@ -1,6 +1,6 @@
 ---
 name: frugal
-description: Orchestrates any multi-step task (code, writing, research, data analysis, decisions) at the lowest token cost that still gets a verified result. Use when a task spans several steps or files, needs research or a design choice, or is a problem whose cause is unknown.
+description: Use FIRST for any task beyond one obvious edit - work touching several files, computing over data or logs, research, a design choice, or a problem whose cause is unknown. Orchestrates it at the lowest token cost that still gets a verified result.
 ---
 
 # Frugal

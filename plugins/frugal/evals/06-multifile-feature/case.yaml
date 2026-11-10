@@ -21,8 +21,8 @@ graders:
     criteria: "Item has an optional discount field (percentage) that defaults to 0, so existing Item(...) calls without it still work."
   - name: total-uses-discount
     type: llm
-    focus: {source: file, path: inventory/store.py}
-    criteria: "total_value applies each item's discount percentage to its unit price (e.g. price * (1 - discount/100)) and still rounds to 2 decimals."
+    focus: trace
+    criteria: "After the change, Store.total_value uses discounted prices, either computing price * (1 - discount/100) itself or calling a helper on Item (such as an effective or discounted price), and the result is still rounded to 2 decimals. Judge from the final versions of inventory/store.py and inventory/models.py shown in the trace."
   - name: report-shows-discount
     type: llm
     focus: {source: file, path: inventory/report.py}

@@ -12,7 +12,7 @@ frugal is a plugin for Claude Code and the Claude app. It works for code, writin
 
 ## Static cost compared with pstack
 
-Projected token cost from Claude Code's own `claude plugin details`, for frugal 0.1.1 and the Claude Code port of pstack, v0.9.134:
+Projected token cost from Claude Code's own `claude plugin details`, for frugal 0.1.2 and the Claude Code port of pstack, v0.9.134:
 
 | | frugal | pstack |
 |---|---:|---:|
@@ -76,7 +76,7 @@ Gates for irreversible or outward-facing actions (delete, force-push, send, publ
 `plugins/frugal/evals/` holds cases for Claude Code's built-in evaluator. Each case runs with and without the plugin, so the headline numbers are the score delta and the cost of each arm.
 
 - **Small tasks** (01–05): build a script, fix a bug, analyze inline data, write an email, and a trivial question. frugal is designed to stay out of the way here (L0), so these check that it does not hurt.
-- **Multi-step tasks** (06–08, tag `multistep`): a feature that crosses three files of a package with tests, a bug whose symptom and cause live in different files, and an analysis over a ~13,000-row CSV on disk. Each one sets up its files with a `scaffold.sh` script. These are where frugal should engage and save tokens.
+- **Multi-step tasks** (06–09, tag `multistep`): a feature that crosses three files of a package with tests, a bug whose symptom and cause live in different files, an analysis over a ~13,000-row CSV on disk, and a root cause buried in a 6 MB log. Each one sets up its files with a `scaffold.sh` script. These are where frugal should engage and save tokens.
 
 ```
 # multi-step cases (scaffold scripts create the project files)
@@ -85,6 +85,8 @@ claude plugin eval ./plugins/frugal --tag multistep --scaffold --allow-tools Wri
 # everything
 claude plugin eval ./plugins/frugal --scaffold --allow-tools Write Edit Bash --no-publish
 ```
+
+To compare against pstack on the same cases (three arms: no plugin, frugal, pstack), run `tools/compare-pstack.sh --tag multistep --runs 1`.
 
 Start with `--runs 1` to check that frugal fires (the `router-fired` indicator), then use the default 3 runs for numbers you can trust.
 

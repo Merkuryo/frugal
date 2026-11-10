@@ -1,0 +1,31 @@
+schema_version: "1.0"
+name: 09-big-log
+description: Root cause buried in a multi-megabyte log with noisy, harmless errors; reading the log into context is the expensive path.
+tags: [multistep]
+context:
+  scaffold_script: scaffold.sh
+execution:
+  prompt: |
+    Since yesterday afternoon some payments fail. The service log is `logs/app.log`.
+    Find what is causing the payment failures and when it started. Give the timestamp of the first failure and the root cause.
+  max_turns: 30
+  timeout_seconds: 500
+  allowed_tools: [Skill, Agent, Read, Write, Edit, Bash, Glob, Grep]
+runs: 3
+graders:
+  - name: names-pool
+    type: regex
+    flags: i
+    pattern: "pool"
+  - name: root-cause
+    type: llm
+    criteria: "Identifies that the config reload at 2026-11-09T14:02:55 (deploy 4821) cut db.pool_size from 50 to 20, causing PoolExhausted errors, and gives 14:03:17 as the first payment failure. Does not blame the recovered redis/cache timeouts."
+  - name: searched-not-read
+    type: regex
+    target: trace
+    pattern: "grep|rg |awk|python3"
+  - name: router-fired
+    type: tool_used
+    tool: Skill
+    input_match: frugal
+    arm: with-only

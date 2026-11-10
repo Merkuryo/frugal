@@ -1,0 +1,20 @@
+name: unpack
+on:
+  push:
+    paths: [frugal-src.zip]
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract source and commit
+        run: |
+          unzip -o frugal-src.zip -d .
+          git rm -q frugal-src.zip
+          git config user.name "Merkuryo"
+          git config user.email "Merkuryo@users.noreply.github.com"
+          git add -A
+          git commit -m "Add frugal 0.1.0 source"
+          git push
